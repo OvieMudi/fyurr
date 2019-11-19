@@ -8,6 +8,7 @@ import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for
 from flask_moment import Moment
 from models import db
+from flask_migrate import Migrate
 import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form
@@ -20,8 +21,8 @@ moment = Moment(app)
 app.config.from_object('config')
 db.app = app
 db.init_app(app)
-
-db.create_all()
+Migrate(app, db)
+# db.create_all()
 
 # TODO: connect to a local postgresql database
 

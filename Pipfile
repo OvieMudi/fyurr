@@ -7,6 +7,13 @@ verify_ssl = true
 
 [packages]
 environs = "*"
+python-dateutil = "==2.6.0"
+flask-moment = "*"
+flask-wtf = "*"
+flask-sqlalchemy = "*"
+Babel = "*"
+psycopg2 = "*"
+flask-migrate = "*"
 
 [requires]
 python_version = "3.7"
