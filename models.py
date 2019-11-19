@@ -1,4 +1,3 @@
-import os
 from sqlalchemy import Column, String, Integer, create_engine
 from flask_sqlalchemy import SQLAlchemy
 
@@ -44,6 +43,7 @@ class Show(db.Model):
     id = Column(Integer, primary_key=True)
     venue_id = Column(Integer)
     venue_name = Column(String(120))
+    artist_id = Column(Integer)
     artist_name = Column(String(120))
     artist_image_link = Column(String(120))
     start_time = Column(String(120))
