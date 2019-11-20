@@ -1,11 +1,14 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate, Manager, MigrateCommand
+from flask_script import Manager
+from flask_sqlalchemy import SQLAlchemy, SessionBase
+from flask_migrate import Migrate, MigrateCommand
 from sqlalchemy import table, column, String, Integer
 from alembic import op
+from models import db
 
 app = Flask(__name__)
 app.config.from_object('config')
+s = SessionBase()
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -14,7 +17,7 @@ manager = Manager(app, db)
 manager.add_command('db', MigrateCommand)
 
 show_table = table('Show',
-                   column("id", Integer)
+                   column("id", Integer),
                    column("venue_id", Integer),
                    column("venue_name", String(120)),
                    column("artist_id", Integer),
@@ -35,7 +38,35 @@ data = [{
 }, {
     "venue_id": 3,
     "venue_name": "Park Square Live Music & Coffee",
-    "artist_id": 5,
+    "artist_idfrom flask_alembic import Alembic
+
+# Intialize the extension
+alembic = Alembic()
+alembic.init_app(app)
+
+with app.app_context():
+    # Auto-generate a migration
+    alembic.revision('making changes')
+
+    # Upgrade the database
+    alembic.upgrade()
+
+    # Access the internals
+    environment_context = alembic.envfrom flask_alembic import Alembic
+
+# Intialize the extension
+alembic = Alembic()
+alembic.init_app(app)
+
+with app.app_context():
+    # Auto-generate a migration
+    alembic.revision('making changes')
+
+    # Upgrade the database
+    alembic.upgrade()
+
+    # Access the internals
+    environment_context = alembic.env": 5,
     "artist_name": "Matt Quevedo",
     "artist_image_link": "https://images.unsplash.com/photo-1495223153807-b916f75de8c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
     "start_time": "2019-06-15T23:00:00.000Z"
@@ -62,8 +93,11 @@ data = [{
     "start_time": "2035-04-15T20:00:00.000Z"
 }]
 
-
-op.bulk_insert(show_table, data)
+@manager.command
+def seed():
+    "Add seed data to database"
+    s.bulk_save_objects(data)
+    s.commit()
 
 if __name__ == '__main__':
     manager.run()
