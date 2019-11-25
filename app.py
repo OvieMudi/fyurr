@@ -7,7 +7,7 @@ import dateutil.parser
 import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for
 from flask_moment import Moment
-from models import db, Show
+from models import db, Artist, Venue, Show
 from flask_migrate import Migrate
 import logging
 from logging import Formatter, FileHandler
@@ -404,7 +404,21 @@ def shows():
   # displays list of shows at /shows
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
-  data = Show.query.all()
+  shows = Show.query.all()
+  data = []
+  showDict = {}
+  for show in shows:
+    print(show.venue)
+    showDict = {
+      'venue_id': show.venue.id,
+      'venue_name': show.venue.name,
+      'artist_id': show.artist.id,
+      'artist_name': show.artist.name,
+      'artist_image_link': show.artist.image_link,
+      'start_time': show.start_time
+    }
+    data.append(showDict)
+  
   return render_template('pages/shows.html', shows=data)
 
 @app.route('/shows/create')

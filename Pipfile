@@ -16,6 +16,7 @@ psycopg2 = "*"
 flask-migrate = "*"
 flask-script = "*"
 alembic = "*"
+requirements-txt = "*"
 
 [requires]
 python_version = "3.7"
