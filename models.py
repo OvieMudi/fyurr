@@ -1,5 +1,6 @@
-from sqlalchemy import Column, String, Integer, Boolean, ARRAY, create_engine, ForeignKey
+from sqlalchemy import Column, String, Integer, Boolean, ARRAY, DateTime, create_engine, ForeignKey
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 
 db = SQLAlchemy()
@@ -8,21 +9,21 @@ db = SQLAlchemy()
 class Venue(db.Model):
     __tablename__ = 'Venue'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    genres = Column(ARRAY(String()), nullable=False)
-    address = Column(String(120), nullable=False)
-    city = Column(String(120), nullable=False)
-    state = Column(String(120), nullable=False)
-    phone = Column(String(120), nullable=False)
-    website = Column(String(120), nullable=False)
-    facebook_link = Column(String())
-    seeking_talent = Column(Boolean, nullable=False)
-    seeking_description = Column(String())
-    image_link = Column(String(500), nullable=False)
+    id = db.Column(Integer, primary_key=True)
+    name = db.Column(String, nullable=False)
+    genres = db.Column(ARRAY(String()), nullable=False)
+    address = db.Column(String(120), nullable=False)
+    city = db.Column(String(120), nullable=False)
+    state = db.Column(String(120), nullable=False)
+    phone = db.Column(String(120), nullable=False)
+    website = db.Column(String(120), nullable=False)
+    facebook_link = db.Column(String())
+    seeking_talent = db.Column(Boolean, nullable=False)
+    seeking_description = db.Column(String())
+    image_link = db.Column(String(500), nullable=False)
 
     def __repr__(self):
-        return f'<Venue {self.name, self.address, self.genres}>'
+        return f'<Venue {self.name, self.address, self.genres, self.shows}>'
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -30,18 +31,20 @@ class Venue(db.Model):
 class Artist(db.Model):
     __tablename__ = 'Artist'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    genres = Column(ARRAY(String()), nullable=False)
-    city = Column(String(120), nullable=False)
-    state = Column(String(120), nullable=False)
-    phone = Column(String(120), nullable=False)
-    genres = Column(String(120), nullable=False)
-    image_link = Column(String(500), nullable=False)
-    facebook_link = Column(String())
+    id = db.Column(Integer, primary_key=True)
+    name = db.Column(String, nullable=False)
+    genres = db.Column(ARRAY(String()), nullable=False)
+    city = db.Column(String(120), nullable=False)
+    state = db.Column(String(120), nullable=False)
+    phone = db.Column(String(120), nullable=False)
+    seeking_venue = db.Column(Boolean, nullable=False)
+    genres = db.Column(String(120), nullable=False)
+    image_link = db.Column(String(500), nullable=False)
+    website = db.Column(String())
+    facebook_link = db.Column(String())
 
     def __repr__(self):
-        return f'<Artist {self.id, self.name, self.genres}>'
+        return f'<Artist {self.id, self.name, self.genres, self.shows}>'
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -51,21 +54,18 @@ class Artist(db.Model):
 class Show(db.Model):
     __tablename__ = 'Show'
 
-    id = Column(Integer, primary_key=True)
-    venue_id = Column(Integer, ForeignKey(
+    id = db.Column(Integer, primary_key=True)
+    venue_id = db.Column(Integer, ForeignKey(
         'Venue.id', onupdate='CASCADE', ondelete='CASCADE'), nullable=False)
-    # venue_name = Column(String(120), nullable=False)
-    artist_id = Column(Integer, ForeignKey(
+    artist_id = db.Column(Integer, ForeignKey(
         'Artist.id', onupdate='CASCADE', ondelete='CASCADE'), nullable=False)
-    # artist_name = Column(String(120), nullable=False)
-    # artist_image_link = Column(String(120), nullable=False)
-    start_time = Column(String(120), nullable=False)
+    start_time = db.Column(DateTime, nullable=False, default=datetime.utcnow())
 
-    artist = db.relationship('Artist', backref=db.backref('shows', lazy=True))
     venue = db.relationship('Venue', backref=db.backref('shows', lazy=True))
+    artist = db.relationship('Artist', backref=db.backref('shows', lazy=True))
 
     def __repr__(self):
-        return f'<Show {self.id, self.artist}>'
+        return f'<Show {self.id, self.start_time, self.artist}>'
 
 
 # Seed data

@@ -1,8 +1,8 @@
-"""inital migrate
+"""empty message
 
-Revision ID: fa04fb00a394
+Revision ID: dc95c9af7a2e
 Revises: 
-Create Date: 2019-11-25 00:30:12.029203
+Create Date: 2019-11-27 23:33:45.938621
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ from models import artist1, artist2, artist3, venue1, venue2, venue3, show1, sho
 
 
 # revision identifiers, used by Alembic.
-revision = 'fa04fb00a394'
+revision = 'dc95c9af7a2e'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -30,13 +30,14 @@ def upgrade():
                                        length=120), nullable=False),
                                    sa.Column('phone', sa.String(
                                        length=120), nullable=False),
+                                   sa.Column('seeking_venue',
+                                             sa.Boolean(), nullable=False),
                                    sa.Column('genres', sa.String(
                                        length=120), nullable=False),
                                    sa.Column('image_link', sa.String(
                                        length=500), nullable=False),
-                                   sa.Column('website',
-                                             sa.String()),
-                                   sa.PrimaryKeyConstraint('id'),
+                                   sa.Column('website', sa.String(),
+                                             nullable=True),
                                    sa.Column('facebook_link',
                                              sa.String(), nullable=True),
                                    sa.PrimaryKeyConstraint('id')
@@ -74,8 +75,8 @@ def upgrade():
                                            nullable=False),
                                  sa.Column('artist_id', sa.Integer(),
                                            nullable=False),
-                                 sa.Column('start_time', sa.String(
-                                     length=120), nullable=False),
+                                 sa.Column('start_time',
+                                           sa.DateTime(), nullable=False),
                                  sa.ForeignKeyConstraint(
                                      ['artist_id'], ['Artist.id'], onupdate='CASCADE', ondelete='CASCADE'),
                                  sa.ForeignKeyConstraint(
