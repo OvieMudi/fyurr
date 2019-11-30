@@ -16,7 +16,7 @@ class Venue(db.Model):
     city = db.Column(String(120), nullable=False)
     state = db.Column(String(120), nullable=False)
     phone = db.Column(String(120), nullable=False)
-    website = db.Column(String(120), nullable=False)
+    website = db.Column(String(120))
     facebook_link = db.Column(String())
     seeking_talent = db.Column(Boolean, nullable=False)
     seeking_description = db.Column(String())
@@ -37,11 +37,11 @@ class Artist(db.Model):
     city = db.Column(String(120), nullable=False)
     state = db.Column(String(120), nullable=False)
     phone = db.Column(String(120), nullable=False)
-    seeking_venue = db.Column(Boolean, nullable=False)
-    genres = db.Column(String(120), nullable=False)
-    image_link = db.Column(String(500), nullable=False)
-    website = db.Column(String())
+    website = db.Column(String(120))
     facebook_link = db.Column(String())
+    seeking_venue = db.Column(Boolean, nullable=False)
+    seeking_description = db.Column(String())
+    image_link = db.Column(String(500), nullable=False)
 
     def __repr__(self):
         return f'<Artist {self.id, self.name, self.genres, self.shows}>'

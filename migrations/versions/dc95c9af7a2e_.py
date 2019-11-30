@@ -32,8 +32,10 @@ def upgrade():
                                        length=120), nullable=False),
                                    sa.Column('seeking_venue',
                                              sa.Boolean(), nullable=False),
-                                   sa.Column('genres', sa.String(
-                                       length=120), nullable=False),
+                                   sa.Column('seeking_description',
+                                             sa.String(), nullable=True),
+                                   sa.Column('genres', sa.ARRAY(
+                                       sa.String()), nullable=False),
                                    sa.Column('image_link', sa.String(
                                        length=500), nullable=False),
                                    sa.Column('website', sa.String(),
