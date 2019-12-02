@@ -11,9 +11,9 @@ from models import db, Artist, Venue, Show
 from flask_migrate import Migrate
 import logging
 from logging import Formatter, FileHandler
-from flask_wtf import Form
+from flask_wtf import Form, CsrfProtect
 from forms import *
-from re import sub
+from sys import exc_info
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -23,7 +23,9 @@ app.config.from_object('config')
 db.app = app
 db.init_app(app)
 Migrate(app, db)
-# db.create_all()
+
+csrf = CsrfProtect(app)
+csrf.init_app(app)
 
 # TODO: connect to a local postgresql database
 
@@ -46,8 +48,20 @@ def format_datetime(value, format='medium'):
 
 app.jinja_env.filters['datetime'] = format_datetime
 
-def pg_array_to_py_list(pg_string):
-  return sub('[{"}]', '', pg_string).split(',')
+def get_value(field_name):
+
+  if field_name == 'genres':
+    return request.form.getlist(field_name)
+
+  elif field_name == 'seeking_talent' and request.form.getlist(field_name)[0] == 'y':
+    return True
+
+  elif field_name == 'seeking_talent' and request.form.getlist(field_name)[0] != 'y':
+    return False
+  
+  else:
+    return request.form.getlist(field_name)[0]
+
 
 #----------------------------------------------------------------------------#
 # Controllers.
@@ -168,13 +182,59 @@ def create_venue_form():
 def create_venue_submission():
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
+  
+  form = VenueForm()
+  valid = form.validate_on_submit()
+  print('form errors===========',form.errors)
+  # if valid:
+  #   pass
+  # else:
+  #   print(form.errors)
+  #   raise Exception('input error.')
 
-  # on successful db insert, flash success
-  flash('Venue ' + request.form['name'] + ' was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
-  # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
-  return render_template('pages/home.html')
+
+  print('request_form =========: ', request.form)
+
+
+  new_venue = Venue(
+    name = get_value('name'),
+    genres = get_value('genres'),
+    address = get_value('address'),
+    city = get_value('city'),
+    state = get_value('state'),
+    phone = get_value('phone'),
+    website = get_value('website_link'),
+    seeking_talent = get_value('seeking_talent'),
+    seeking_description = get_value('seeking_description'),
+    facebook_link = get_value('facebook_link'),
+    image_link = get_value('image_link')
+  )
+  # new_venue.image_link = 'http://cheesecake.articleassets.meaww.com/12475/uploads/fde32f7612de45e0acff8d1f9e495e3c_800_420.jpeg'
+
+  try:
+    db.session.add(new_venue)
+    db.session.commit()
+    print('new_venue:===================== ', new_venue)
+    flash('Venue ' + request.form['name'] + ' was successfully listed!')
+
+  except:
+    flash('An error occurred. Venue ' + new_venue.name + ' could not be listed.')
+    print('exc_info():==========', exc_info())
+    db.session.rollback()
+
+  finally:
+    db.session.close()
+    return render_template('pages/home.html')
+  
+
+  # # for field in x_form:
+  # #   print(field)
+  # # on successful db insert, flash success
+  # flash('Venue ' + request.form['name'] + ' was successfully listed!')
+  # # TODO: on unsuccessful db insert, flash an error instead.
+  # # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
+  # # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+  # return render_template('pages/home.html')
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):

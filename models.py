@@ -18,7 +18,7 @@ class Venue(db.Model):
     phone = db.Column(String(120), nullable=False)
     website = db.Column(String(120))
     facebook_link = db.Column(String())
-    seeking_talent = db.Column(Boolean, nullable=False)
+    seeking_talent = db.Column(Boolean, default=False)
     seeking_description = db.Column(String())
     image_link = db.Column(String(500), nullable=False)
 
@@ -39,7 +39,7 @@ class Artist(db.Model):
     phone = db.Column(String(120), nullable=False)
     website = db.Column(String(120))
     facebook_link = db.Column(String())
-    seeking_venue = db.Column(Boolean, nullable=False)
+    seeking_venue = db.Column(Boolean, default=False)
     seeking_description = db.Column(String())
     image_link = db.Column(String(500), nullable=False)
 
