@@ -113,17 +113,23 @@ def venues():
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
-  # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
-  # seach for Hop should return "The Musical Hop".
-  # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
+  search_term = get_value('search_term')
+  venue_result = Venue.query.filter(Venue.name.ilike(f'%{search_term}%')).all()
+
   response = {
-    "count": 1,
-    "data": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
+    "count": len(venue_result),
+    "data": []
   }
+
+  for result in venue_result:
+    response["data"].append({
+      "id": result.id,
+      "name": result.name,
+      "num_upcoming_shows": len(result.shows)
+    })
+  
+  db.session.close()
+
   return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
 
@@ -132,9 +138,6 @@ def search_venues():
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
-  # shows the venue page with the given venue_id
-  # TODO: replace with real venue data from the venues table, using venue_id
-
   venue = Venue.query.get(venue_id)
 
   past_shows = []
@@ -186,15 +189,6 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-  # TODO: insert form data as a new Venue record in the db, instead
-  # TODO: modify data to be the data object returned from db insertion
-  
-  # print('form website======', request.form['genres'])
-  # if valid:
-  #   pass
-  # else:
-  #   print(form.errors)
-  #   raise Exception('input error.')
 
   new_venue = Venue(
     name = get_value('name'),
@@ -370,7 +364,6 @@ def edit_artist_submission(artist_id):
 def edit_venue(venue_id):
   form = VenueForm()
   venue = Venue.query.get(venue_id)
-  # TODO: populate form with values from venue with ID <venue_id>
   return render_template('forms/edit_venue.html', form=form, venue=venue)
 
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
