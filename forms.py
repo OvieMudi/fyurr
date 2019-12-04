@@ -224,6 +224,12 @@ class ArtistForm(Form):
             ('Other', 'Other'),
         ]
     )
+    seeking_venue = BooleanField(
+        'seeking_venue', default='checked'
+    )
+    seeking_description = TextAreaField(
+        'seeking_description', default='We need a venue to play for upcoming weekends.', validators=[Optional(), Length(min=10, message='Description is too short.')]
+    )
     facebook_link = StringField(
         # TODO implement enum restriction
         'facebook_link', validators=[URL()]

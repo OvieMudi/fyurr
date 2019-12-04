@@ -17,3 +17,6 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # Limit file caching
 SEND_FILE_MAX_AGE_DEFAULT = 0
+
+# CSRF token lasts till end of current session
+WTF_CSRF_TIME_LIMIT = None
