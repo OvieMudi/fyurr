@@ -203,7 +203,6 @@ def create_venue_submission():
     facebook_link = get_value('facebook_link'),
     image_link = get_value('image_link')
   )
-  # new_venue.image_link = 'http://cheesecake.articleassets.meaww.com/12475/uploads/fde32f7612de45e0acff8d1f9e495e3c_800_420.jpeg'
 
   try:
     db.session.add(new_venue)
@@ -217,7 +216,7 @@ def create_venue_submission():
 
   finally:
     db.session.close()
-    return render_template(url_for('venues'))
+    return redirect(url_for('venues'))
 
 
 #  Delete Venue
@@ -287,9 +286,6 @@ def search_artists():
 
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
-  # shows the venue page with the given venue_id
-  # TODO: replace with real venue data from the venues table, using venue_id
-
   artist = Artist.query.get(artist_id)
 
   past_shows = []
@@ -339,16 +335,75 @@ def edit_artist(artist_id):
   form = ArtistForm()
   artist = Artist.query.get(artist_id)
   form.name.default = artist.name
+  form.city.default = artist.city
+  form.state.default = artist.state
+  form.phone.default = artist.phone
+  form.genres.default = artist.genres
+  form.seeking_venue.default = artist.seeking_venue
+  form.seeking_description.default = artist.seeking_description
+  form.facebook_link.default = artist.facebook_link
+  form.image_link.default = artist.image_link
+  form.website_link.default = artist.website_link
   form.process()
-  # TODO: populate form with fields from artist with ID <artist_id>
+
   return render_template('forms/edit_artist.html', form=form, artist=artist)
 
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
-  # TODO: take values from the form submitted, and update existing
-  # artist record with ID <artist_id> using the new attributes
+  artist = Artist.query.get(artist_id)
+  
+  try:
+    artist.name = get_value('name')
+    artist.genres = get_value('genres')
+    artist.city = get_value('city')
+    artist.state = get_value('state')
+    artist.phone = get_value('phone')
+    artist.website = get_value('website_link')
+    artist.seeking_talent = get_value('seeking_talent')
+    artist.seeking_description = get_value('seeking_description')
+    artist.facebook_link = get_value('facebook_link')
+    artist.image_link = get_value('image_link')
+    
+    db.session.commit()
+    print('new_artist:=========== ', artist)
+    flash('artist ' + request.form['name'] + ' was successfully updated!')
 
-  return redirect(url_for('show_artist', artist_id=artist_id))
+  except:
+    flash('An error occurred. artist ' + request.form['name'] + ' could not be updated.', category='error')
+    print('exc_info():==========', exc_info())
+    db.session.rollback()
+
+  finally:
+    db.session.close()
+    return redirect(url_for('show_artist', artist_id=artist_id))
+
+
+#  Artist/Delete
+#  ----------------------------------------------------------------
+
+@app.route('/artists/<artist_id>', methods=['DELETE'])
+def delete_artist(artist_id):
+  status = False
+  try:
+    artist = Artist.query.get(artist_id)
+    db.session.delete(artist)
+    db.session.commit()
+    status = True
+    flash('Artist successfully deleted!')
+
+  except:
+    print(exc_info())
+    db.session.rollback()
+    status = False
+    flash('Error deleting artist', category='error')
+
+  finally:
+    db.session.close()
+  
+  return jsonify({
+    'success': status
+    })
+
 
 
 #  Venues/Edit
@@ -417,7 +472,6 @@ def create_artist_submission():
     facebook_link = get_value('facebook_link'),
     image_link = get_value('image_link')
   )
-  # new_artist.image_link = 'http://cheesecake.articleassets.meaww.com/12475/uploads/fde32f7612de45e0acff8d1f9e495e3c_800_420.jpeg'
 
   try:
     db.session.add(new_artist)
@@ -432,7 +486,7 @@ def create_artist_submission():
 
   finally:
     db.session.close()
-    return render_template(url_for('artists'))
+    return redirect(url_for('artists'))
 
 
 #  Shows
