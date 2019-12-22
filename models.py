@@ -25,11 +25,6 @@ class Venue(db.Model):
     def __repr__(self):
         return f'<Venue {self.name, self.address, self.genres, self.shows}>'
 
-    def __getattr__(self, attr):
-        return None
-
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
-
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
@@ -49,13 +44,6 @@ class Artist(db.Model):
     def __repr__(self):
         return f'<Artist {self.id, self.name, self.genres, self.shows}>'
 
-    def __getattr__(self, attr):
-        return None
-
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
-
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
-
 
 class Show(db.Model):
     __tablename__ = 'Show'
@@ -72,9 +60,6 @@ class Show(db.Model):
 
     def __repr__(self):
         return f'<Show {self.id, self.start_time, self.artist}>'
-
-    def __getattr__(self, attr):
-        return None
 
 
 # Seed data

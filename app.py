@@ -11,7 +11,7 @@ from models import db, Artist, Venue, Show
 from flask_migrate import Migrate
 import logging
 from logging import Formatter, FileHandler
-from flask_wtf import Form, CsrfProtect
+from flask_wtf import Form, CSRFProtect
 from forms import *
 from sys import exc_info
 #----------------------------------------------------------------------------#
@@ -24,7 +24,7 @@ db.app = app
 db.init_app(app)
 Migrate(app, db)
 
-csrf = CsrfProtect(app)
+csrf = CSRFProtect(app)
 csrf.init_app(app)
 
 # TODO: connect to a local postgresql database
@@ -365,7 +365,6 @@ def edit_artist_submission(artist_id):
     artist.image_link = get_value('image_link')
     
     db.session.commit()
-    print('new_artist:=========== ', artist)
     flash('artist ' + request.form['name'] + ' was successfully updated!')
 
   except:
@@ -437,7 +436,6 @@ def edit_venue_submission(venue_id):
     venue.image_link = get_value('image_link')
     
     db.session.commit()
-    print('new_venue:=========== ', venue)
     flash('Venue ' + request.form['name'] + ' was successfully updated!')
 
   except:
@@ -476,7 +474,6 @@ def create_artist_submission():
   try:
     db.session.add(new_artist)
     db.session.commit()
-    print('new_artist: ', new_artist)
     flash('Artist ' + request.form['name'] + ' was successfully listed!')
 
   except:
@@ -521,15 +518,25 @@ def create_shows():
 
 @app.route('/shows/create', methods=['POST'])
 def create_show_submission():
-  # called to create new shows in the db, upon submitting new show listing form
-  # TODO: insert form data as a new Show record in the db, instead
+  new_show = Show(
+    artist_id = get_value('artist_id'),
+    venue_id = get_value('venue_id'),
+    start_time = get_value('start_time')
+  )
 
-  # on successful db insert, flash success
-  flash('Show was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Show could not be listed.')
-  # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
-  return render_template('pages/home.html')
+  try:
+    db.session.add(new_show)
+    db.session.commit()
+    flash('Show ' + request.form['name'] + ' was successfully listed!')
+    
+  except:
+    flash('An error occurred. Show ' + request.form['name'] + ' could not be listed.', category='error')
+    print('exc_info(): ', exc_info())
+    db.session.rollback()
+
+  finally:
+    db.session.close()
+    return redirect(url_for('shows'))
 
 @app.errorhandler(404)
 def not_found_error(error):
