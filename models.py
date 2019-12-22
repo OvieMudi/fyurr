@@ -18,14 +18,12 @@ class Venue(db.Model):
     phone = db.Column(String(120), nullable=False)
     website = db.Column(String(120))
     facebook_link = db.Column(String())
-    seeking_talent = db.Column(Boolean, nullable=False)
+    seeking_talent = db.Column(Boolean, default=False)
     seeking_description = db.Column(String())
     image_link = db.Column(String(500), nullable=False)
 
     def __repr__(self):
         return f'<Venue {self.name, self.address, self.genres, self.shows}>'
-
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
 
 class Artist(db.Model):
@@ -39,16 +37,12 @@ class Artist(db.Model):
     phone = db.Column(String(120), nullable=False)
     website = db.Column(String(120))
     facebook_link = db.Column(String())
-    seeking_venue = db.Column(Boolean, nullable=False)
+    seeking_venue = db.Column(Boolean, default=False)
     seeking_description = db.Column(String())
     image_link = db.Column(String(500), nullable=False)
 
     def __repr__(self):
         return f'<Artist {self.id, self.name, self.genres, self.shows}>'
-
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
-
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
 
 class Show(db.Model):
